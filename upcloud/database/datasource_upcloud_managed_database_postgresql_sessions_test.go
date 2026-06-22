@@ -14,7 +14,7 @@ func TestAccDataSourceUpcloudManagedDatabasePostgreSQLSessions(t *testing.T) {
 	name := "data.upcloud_managed_database_postgresql_sessions.postgresql_sessions"
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:                 func() { upcloud.TestAccPreCheck(t) },
-		ProtoV6ProviderFactories: upcloud.TestAccProviderFactories,
+		ProtoV6ProviderFactories: upcloud.TestAccFrameworkProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: testDataS1,

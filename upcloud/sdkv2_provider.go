@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/UpCloudLtd/terraform-provider-upcloud/internal/config"
-	"github.com/UpCloudLtd/terraform-provider-upcloud/internal/service/database"
 	"github.com/UpCloudLtd/terraform-provider-upcloud/internal/service/gateway"
 	"github.com/UpCloudLtd/terraform-provider-upcloud/internal/service/network"
 	"github.com/UpCloudLtd/upcloud-go-api/credentials"
@@ -69,9 +68,7 @@ func Provider() *schema.Provider {
 
 		DataSourcesMap: map[string]*schema.Resource{
 			"upcloud_networks": network.DataSourceNetworks(),
-			"upcloud_managed_database_mysql_sessions":      database.DataSourceSessionsMySQL(),
-			"upcloud_managed_database_postgresql_sessions": database.DataSourceSessionsPostgreSQL(),
-			"upcloud_managed_database_valkey_sessions":     database.DataSourceSessionsValkey(),
+	
 		},
 
 		ConfigureContextFunc: providerConfigureWithDefaultUserAgent,
