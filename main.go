@@ -14,20 +14,15 @@ func main() {
 	flag.BoolVar(&debug, "debug", false, "set to true to run the provider with support for debuggers like delve")
 	flag.Parse()
 
-	factory, err := upcloud.NewProviderServerFactory()
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	var serveOpts []tf6server.ServeOpt
 
 	if debug {
 		serveOpts = append(serveOpts, tf6server.WithManagedDebug())
 	}
 
-	err = tf6server.Serve(
+	err := tf6server.Serve(
 		"registry.opentofu.org/upcloudltd/upcloud",
-		factory,
+		upcloud.NewProviderServerFactory(),
 		serveOpts...,
 	)
 	if err != nil {

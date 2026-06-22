@@ -15,7 +15,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
@@ -50,13 +49,12 @@ func init() {
 	TestAccProvider = Provider()
 	TestAccProviderFactories = make(map[string]func() (tfprotov6.ProviderServer, error))
 	TestAccProviderFactories["upcloud"] = func() (tfprotov6.ProviderServer, error) {
-		factory, err := NewProviderServerFactory()
-		return factory(), err
+		return NewProviderServerFactory()(), nil
 	}
 
 	TestAccFrameworkProviderFactories = make(map[string]func() (tfprotov6.ProviderServer, error))
 	TestAccFrameworkProviderFactories["upcloud"] = func() (tfprotov6.ProviderServer, error) {
-		return providerserver.NewProtocol6(New())(), nil
+		return NewProviderServerFactory()(), nil
 	}
 }
 
