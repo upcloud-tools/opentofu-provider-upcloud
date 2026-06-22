@@ -18,7 +18,7 @@ func TestAccDataSourceUpcloudManagedDatabaseOpenSearchIndices(t *testing.T) {
 	}
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:                 func() { upcloud.TestAccPreCheck(t) },
-		ProtoV6ProviderFactories: upcloud.TestAccProviderFactories,
+		ProtoV6ProviderFactories: upcloud.TestAccFrameworkProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: testDataS1,

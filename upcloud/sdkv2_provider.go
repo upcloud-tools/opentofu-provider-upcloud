@@ -69,7 +69,6 @@ func Provider() *schema.Provider {
 
 		DataSourcesMap: map[string]*schema.Resource{
 			"upcloud_networks": network.DataSourceNetworks(),
-			"upcloud_managed_database_opensearch_indices":  database.DataSourceOpenSearchIndices(),
 			"upcloud_managed_database_mysql_sessions":      database.DataSourceSessionsMySQL(),
 			"upcloud_managed_database_postgresql_sessions": database.DataSourceSessionsPostgreSQL(),
 			"upcloud_managed_database_valkey_sessions":     database.DataSourceSessionsValkey(),
