@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/UpCloudLtd/terraform-provider-upcloud/internal/config"
-	"github.com/UpCloudLtd/terraform-provider-upcloud/internal/service/gateway"
 	"github.com/UpCloudLtd/upcloud-go-api/credentials"
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -59,10 +58,7 @@ func Provider() *schema.Provider {
 			},
 		},
 
-		ResourcesMap: map[string]*schema.Resource{
-			"upcloud_gateway_connection":                gateway.ResourceConnection(),
-			"upcloud_gateway_connection_tunnel":         gateway.ResourceTunnel(),
-		},
+		ResourcesMap: map[string]*schema.Resource{},
 
 		DataSourcesMap: map[string]*schema.Resource{},
 
