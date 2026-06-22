@@ -214,6 +214,7 @@ func (p *upcloudProvider) DataSources(_ context.Context) []func() datasource.Dat
 		managedobjectstorage.NewPoliciesDataSource,
 		managedobjectstorage.NewRegionsDataSource,
 		storage.NewStorageDataSource,
+		network.NewNetworksDataSource,
 		database.NewOpenSearchIndicesDataSource,
 		database.NewMySQLSessionsDataSource,
 		database.NewPostgreSQLSessionsDataSource,
