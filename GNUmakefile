@@ -1,6 +1,6 @@
 TEST?=$$(go list ./... |grep -v 'vendor')
 GOFMT_FILES?=$$(find . -name '*.go' |grep -v vendor)
-WEBSITE_REPO=github.com/hashicorp/terraform-website
+# WEBSITE_REPO=github.com/hashicorp/terraform-website
 
 PACKAGE=$(shell env GO111MODULE=on go list)
 GIT_VERSION?=$(shell git describe --tags --always --dirty --match=v* 2> /dev/null || \
@@ -136,7 +136,7 @@ install-tools:
 	cd .ci/tools && GOBIN=$(TOOLS_DIR) go install github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs
 
 docs: install-tools
-	terraform fmt -recursive examples/
+	tofu fmt -recursive examples/ || terraform fmt -recursive examples/
 	$(TOOLS_DIR)/tfplugindocs --blocks-section
 	./scripts/group-docs.sh
 

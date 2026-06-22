@@ -26,7 +26,7 @@ func main() {
 	}
 
 	err = tf6server.Serve(
-		"registry.terraform.io/upcloudltd/upcloud",
+		"registry.opentofu.org/upcloudltd/upcloud",
 		factory,
 		serveOpts...,
 	)

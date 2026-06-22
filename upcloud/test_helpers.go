@@ -15,6 +15,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
@@ -25,18 +26,37 @@ import (
 )
 
 var (
-	TestAccProviderFactories map[string]func() (tfprotov6.ProviderServer, error)
-	TestAccProvider          *schema.Provider
+	TestAccProviderFactories         map[string]func() (tfprotov6.ProviderServer, error)
+	TestAccFrameworkProviderFactories map[string]func() (tfprotov6.ProviderServer, error)
+	TestAccProvider                   *schema.Provider
 )
 
 const DebianTemplateUUID = "01000000-0000-4000-8000-000020070100"
 
 func init() {
+	tofuPath, _ := exec.LookPath("tofu")
+	if tofuPath != "" {
+		os.Setenv("TF_ACC_TERRAFORM_PATH", tofuPath)
+	}
+	if os.Getenv("TF_ACC_TERRAFORM_PATH") != "" && strings.HasSuffix(os.Getenv("TF_ACC_TERRAFORM_PATH"), "tofu") {
+		if os.Getenv("TF_ACC_PROVIDER_NAMESPACE") == "" {
+			os.Setenv("TF_ACC_PROVIDER_NAMESPACE", "hashicorp")
+		}
+		if os.Getenv("TF_ACC_PROVIDER_HOST") == "" {
+			os.Setenv("TF_ACC_PROVIDER_HOST", "registry.opentofu.org")
+		}
+	}
+
 	TestAccProvider = Provider()
 	TestAccProviderFactories = make(map[string]func() (tfprotov6.ProviderServer, error))
 	TestAccProviderFactories["upcloud"] = func() (tfprotov6.ProviderServer, error) {
 		factory, err := NewProviderServerFactory()
 		return factory(), err
+	}
+
+	TestAccFrameworkProviderFactories = make(map[string]func() (tfprotov6.ProviderServer, error))
+	TestAccFrameworkProviderFactories["upcloud"] = func() (tfprotov6.ProviderServer, error) {
+		return providerserver.NewProtocol6(New())(), nil
 	}
 }
 

@@ -19,6 +19,7 @@ import (
 	"github.com/UpCloudLtd/terraform-provider-upcloud/internal/service/router"
 	"github.com/UpCloudLtd/terraform-provider-upcloud/internal/service/server"
 	"github.com/UpCloudLtd/terraform-provider-upcloud/internal/service/servergroup"
+	"github.com/UpCloudLtd/terraform-provider-upcloud/internal/service/tag"
 	"github.com/UpCloudLtd/terraform-provider-upcloud/internal/service/storage"
 	"github.com/UpCloudLtd/upcloud-go-api/credentials"
 
@@ -197,6 +198,7 @@ func (p *upcloudProvider) Resources(_ context.Context) []func() resource.Resourc
 		filestorage.NewFileStorageResource,
 		filestorage.NewFileStorageShareResource,
 		filestorage.NewFileStorageShareACLResource,
+		tag.NewTagResource,
 	}
 }
 
@@ -211,6 +213,7 @@ func (p *upcloudProvider) DataSources(_ context.Context) []func() datasource.Dat
 		managedobjectstorage.NewPoliciesDataSource,
 		managedobjectstorage.NewRegionsDataSource,
 		storage.NewStorageDataSource,
+		tag.NewTagsDataSource,
 	}
 }
 

@@ -21,7 +21,7 @@ func TestAccUpcloudTag_basic(t *testing.T) {
 
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:                 func() { upc.TestAccPreCheck(t) },
-		ProtoV6ProviderFactories: upc.TestAccProviderFactories,
+		ProtoV6ProviderFactories: upc.TestAccFrameworkProviderFactories,
 		CheckDestroy:             testAccCheckTagDestroy,
 		Steps: []resource.TestStep{
 			{
@@ -53,7 +53,7 @@ func TestAccUpCloudTag_import(t *testing.T) {
 
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck:                 func() { upc.TestAccPreCheck(t) },
-		ProtoV6ProviderFactories: upc.TestAccProviderFactories,
+		ProtoV6ProviderFactories: upc.TestAccFrameworkProviderFactories,
 		CheckDestroy:             testAccCheckTagDestroy,
 		Steps: []resource.TestStep{
 			{
