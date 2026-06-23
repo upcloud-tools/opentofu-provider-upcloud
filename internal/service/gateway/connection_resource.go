@@ -24,6 +24,7 @@ import (
 )
 
 var namePattern = regexp.MustCompile("^[a-zA-Z0-9_-]+$")
+var uuidPattern = regexp.MustCompile("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
 
 var (
 	_ resource.Resource                = &connectionResource{}
@@ -234,7 +235,7 @@ func (r *connectionResource) Read(ctx context.Context, req resource.ReadRequest,
 		return
 	}
 
-	serviceUUID, connUUID, err := parseConnectionID(data.ID.ValueString(), data.Gateway.ValueString())
+	serviceUUID, connUUID, err := parseConnectionID(ctx, r.client, data.ID.ValueString(), data.Gateway.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to parse connection ID",
@@ -242,6 +243,8 @@ func (r *connectionResource) Read(ctx context.Context, req resource.ReadRequest,
 		)
 		return
 	}
+
+	data.ID = types.StringValue(utils.MarshalID(serviceUUID, connUUID))
 
 	conn, err := r.client.GetGatewayConnection(ctx, &request.GetGatewayConnectionRequest{
 		ServiceUUID: serviceUUID,
@@ -272,7 +275,7 @@ func (r *connectionResource) Update(ctx context.Context, req resource.UpdateRequ
 		return
 	}
 
-	serviceUUID, connUUID, err := parseConnectionID(data.ID.ValueString(), data.Gateway.ValueString())
+	serviceUUID, connUUID, err := parseConnectionID(ctx, r.client, data.ID.ValueString(), data.Gateway.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to parse connection ID",
@@ -314,7 +317,7 @@ func (r *connectionResource) Delete(ctx context.Context, req resource.DeleteRequ
 		return
 	}
 
-	serviceUUID, connUUID, err := parseConnectionID(data.ID.ValueString(), data.Gateway.ValueString())
+	serviceUUID, connUUID, err := parseConnectionID(ctx, r.client, data.ID.ValueString(), data.Gateway.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to parse connection ID",
@@ -338,15 +341,32 @@ func (r *connectionResource) ImportState(ctx context.Context, req resource.Impor
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
-func parseConnectionID(id string, gateway string) (serviceUUID, connUUID string, err error) {
+func parseConnectionID(ctx context.Context, svc *service.Service, id string, gateway string) (serviceUUID, connUUID string, err error) {
 	if err := utils.UnmarshalID(id, &serviceUUID, &connUUID); err != nil || connUUID == "" {
-		if gateway == "" {
-			return "", "", fmt.Errorf("invalid connection ID %q and no gateway in state", id)
-		}
 		connUUID = id
 		serviceUUID = gateway
 	}
-	return serviceUUID, connUUID, nil
+
+	if uuidPattern.MatchString(connUUID) {
+		return serviceUUID, connUUID, nil
+	}
+
+	if serviceUUID == "" {
+		return "", "", fmt.Errorf("invalid connection ID %q and no gateway in state", id)
+	}
+
+	conns, err := svc.GetGatewayConnections(ctx, &request.GetGatewayConnectionsRequest{ServiceUUID: serviceUUID})
+	if err != nil {
+		return "", "", fmt.Errorf("failed to resolve connection name %q: %w", connUUID, err)
+	}
+
+	for _, conn := range conns {
+		if conn.Name == connUUID {
+			return serviceUUID, conn.UUID, nil
+		}
+	}
+
+	return "", "", fmt.Errorf("connection by name %q not found in service %s", connUUID, serviceUUID)
 }
 
 func setConnectionState(ctx context.Context, data *connectionModel, conn *upcloud.GatewayConnection) diag.Diagnostics {

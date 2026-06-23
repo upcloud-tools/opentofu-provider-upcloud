@@ -338,7 +338,7 @@ func (r *tunnelResource) Read(ctx context.Context, req resource.ReadRequest, res
 		return
 	}
 
-	serviceUUID, connectionUUID, tunnelUUID, err := parseTunnelID(data.ID.ValueString(), data.ConnectionID.ValueString())
+	serviceUUID, connectionUUID, tunnelUUID, err := parseTunnelID(ctx, r.client, data.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to parse tunnel ID",
@@ -346,6 +346,8 @@ func (r *tunnelResource) Read(ctx context.Context, req resource.ReadRequest, res
 		)
 		return
 	}
+
+	data.ID = types.StringValue(utils.MarshalID(serviceUUID, connectionUUID, tunnelUUID))
 
 	tunnel, err := r.client.GetGatewayConnectionTunnel(ctx, &request.GetGatewayConnectionTunnelRequest{
 		ServiceUUID:    serviceUUID,
@@ -379,7 +381,7 @@ func (r *tunnelResource) Update(ctx context.Context, req resource.UpdateRequest,
 		return
 	}
 
-	serviceUUID, connectionUUID, tunnelUUID, err := parseTunnelID(state.ID.ValueString(), state.ConnectionID.ValueString())
+	serviceUUID, connectionUUID, tunnelUUID, err := parseTunnelID(ctx, r.client, state.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to parse tunnel ID",
@@ -434,7 +436,7 @@ func (r *tunnelResource) Delete(ctx context.Context, req resource.DeleteRequest,
 		return
 	}
 
-	serviceUUID, connectionUUID, tunnelUUID, err := parseTunnelID(data.ID.ValueString(), data.ConnectionID.ValueString())
+	serviceUUID, connectionUUID, tunnelUUID, err := parseTunnelID(ctx, r.client, data.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to parse tunnel ID",
@@ -466,19 +468,55 @@ func parseTunnelConnectionID(id string) (serviceUUID, connectionUUID string, err
 	return serviceUUID, connectionUUID, nil
 }
 
-func parseTunnelID(id string, connectionID string) (serviceUUID, connectionUUID, tunnelUUID string, err error) {
-	if err := utils.UnmarshalID(id, &serviceUUID, &connectionUUID, &tunnelUUID); err != nil || tunnelUUID == "" {
-		return migrateTunnelID(id, connectionID)
+func parseTunnelID(ctx context.Context, svc *service.Service, id string) (serviceUUID, connectionUUID, tunnelUUID string, err error) {
+	if err := utils.UnmarshalID(id, &serviceUUID, &connectionUUID, &tunnelUUID); err != nil {
+		return "", "", "", fmt.Errorf("invalid tunnel ID %q", id)
 	}
-	return serviceUUID, connectionUUID, tunnelUUID, nil
+
+	if uuidPattern.MatchString(connectionUUID) && uuidPattern.MatchString(tunnelUUID) {
+		return serviceUUID, connectionUUID, tunnelUUID, nil
+	}
+
+	return migrateTunnelID(ctx, svc, serviceUUID, connectionUUID, tunnelUUID)
 }
 
-func migrateTunnelID(id string, connectionID string) (serviceUUID, connectionUUID, tunnelUUID string, err error) {
-	var svcUUID, connName, tunName string
-	if err := utils.UnmarshalID(id, &svcUUID, &connName, &tunName); err != nil {
-		return "", "", "", fmt.Errorf("cannot parse legacy tunnel ID %q", id)
+func migrateTunnelID(ctx context.Context, svc *service.Service, svcUUID, connName, tunName string) (serviceUUID, connectionUUID, tunnelUUID string, err error) {
+	conns, err := svc.GetGatewayConnections(ctx, &request.GetGatewayConnectionsRequest{ServiceUUID: svcUUID})
+	if err != nil {
+		return "", "", "", fmt.Errorf("failed to resolve connection name %q: %w", connName, err)
 	}
-	return "", "", "", fmt.Errorf("legacy tunnel ID %q requires re-import; use the connection ID from state", id)
+
+	var connUUID string
+	for _, conn := range conns {
+		if conn.Name == connName {
+			connUUID = conn.UUID
+			break
+		}
+	}
+	if connUUID == "" {
+		return "", "", "", fmt.Errorf("connection by name %q not found in service %s", connName, svcUUID)
+	}
+
+	tuns, err := svc.GetGatewayConnectionTunnels(ctx, &request.GetGatewayConnectionTunnelsRequest{
+		ServiceUUID:    svcUUID,
+		ConnectionUUID: connUUID,
+	})
+	if err != nil {
+		return "", "", "", fmt.Errorf("failed to resolve tunnel name %q: %w", tunName, err)
+	}
+
+	var tunUUID string
+	for _, tun := range tuns {
+		if tun.Name == tunName {
+			tunUUID = tun.UUID
+			break
+		}
+	}
+	if tunUUID == "" {
+		return "", "", "", fmt.Errorf("tunnel by name %q not found in connection %s", tunName, connUUID)
+	}
+
+	return svcUUID, connUUID, tunUUID, nil
 }
 
 func setTunnelState(ctx context.Context, data *tunnelModel, tunnel *upcloud.GatewayTunnel) diag.Diagnostics {
