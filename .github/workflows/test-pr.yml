@@ -3,8 +3,8 @@ name: OpenTofu
 on:
   pull_request:
     paths:
-      - .github/workflows/acctest.yml
-      - .github/workflows/terraform.yml
+      - .github/workflows/_acctest.yml
+      - .github/workflows/test-pr.yml
       - go.mod
       - go.sum
       - GNUmakefile
@@ -16,7 +16,7 @@ on:
 
 jobs:
   Test:
-    uses: ./.github/workflows/acctest.yml
+    uses: ./.github/workflows/_acctest.yml
     with:
       tool: tofu
     secrets: inherit

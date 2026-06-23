@@ -10,7 +10,7 @@ on:
 
 jobs:
   Test:
-    uses: ./.github/workflows/acctest.yml
+    uses: ./.github/workflows/_acctest.yml
     with:
       tool: tofu
     secrets: inherit
