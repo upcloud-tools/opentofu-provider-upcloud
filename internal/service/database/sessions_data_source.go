@@ -306,6 +306,13 @@ func stringPointerToString(v *string) types.String {
 	return types.StringValue(*v)
 }
 
+func timePointerToString(v *time.Time) types.String {
+	if v == nil {
+		return types.StringNull()
+	}
+	return types.StringValue(v.UTC().Format(time.RFC3339Nano))
+}
+
 func buildSessionsFrameworkMySQL(sessions []upcloud.ManagedDatabaseSessionMySQL) []sessionMySQLModel {
 	res := make([]sessionMySQLModel, 0, len(sessions))
 	for _, s := range sessions {
@@ -347,7 +354,7 @@ func buildSessionsFrameworkPostgreSQL(sessions []upcloud.ManagedDatabaseSessionP
 			Usesysid:        types.Int64Value(int64(s.Usesysid)),
 			WaitEvent:       types.StringValue(s.WaitEvent),
 			WaitEventType:   types.StringValue(s.WaitEventType),
-			XactStart:       types.StringValue(s.XactStart.UTC().Format(time.RFC3339Nano)),
+			XactStart:       timePointerToString(s.XactStart),
 		})
 	}
 	return res

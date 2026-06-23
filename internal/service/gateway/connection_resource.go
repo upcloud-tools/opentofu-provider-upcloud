@@ -341,7 +341,11 @@ func (r *connectionResource) ImportState(ctx context.Context, req resource.Impor
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
-func parseConnectionID(ctx context.Context, svc *service.Service, id string, gateway string) (serviceUUID, connUUID string, err error) {
+type connectionLookup interface {
+	GetGatewayConnections(ctx context.Context, r *request.GetGatewayConnectionsRequest) ([]upcloud.GatewayConnection, error)
+}
+
+func parseConnectionID(ctx context.Context, svc connectionLookup, id string, gateway string) (serviceUUID, connUUID string, err error) {
 	if err := utils.UnmarshalID(id, &serviceUUID, &connUUID); err != nil || connUUID == "" {
 		connUUID = id
 		serviceUUID = gateway

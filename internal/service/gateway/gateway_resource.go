@@ -170,6 +170,10 @@ func (r *gatewayResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 						Description: "Name of the IP address",
 						Optional:    true,
 						Computed:    true,
+						Validators: []validator.String{
+							stringvalidator.LengthBetween(1, 64),
+							stringvalidator.RegexMatches(namePattern, "must contain only alphanumeric characters, hyphens, and underscores"),
+						},
 					},
 				},
 			},

@@ -24,29 +24,6 @@ import (
 )
 
 var (
-	allowedSecurityAlgorithms = []string{
-		string(upcloud.GatewayIPSecAlgorithm_aes128),
-		string(upcloud.GatewayIPSecAlgorithm_aes192),
-		string(upcloud.GatewayIPSecAlgorithm_aes256),
-		string(upcloud.GatewayIPSecAlgorithm_aes128gcm16),
-		string(upcloud.GatewayIPSecAlgorithm_aes128gcm128),
-		string(upcloud.GatewayIPSecAlgorithm_aes192gcm16),
-		string(upcloud.GatewayIPSecAlgorithm_aes192gcm128),
-		string(upcloud.GatewayIPSecAlgorithm_aes256gcm16),
-		string(upcloud.GatewayIPSecAlgorithm_aes256gcm128),
-	}
-	allowedIntegrityAlgorithms = []string{
-		string(upcloud.GatewayIPSecIntegrityAlgorithm_aes128gmac),
-		string(upcloud.GatewayIPSecIntegrityAlgorithm_aes256gmac),
-		string(upcloud.GatewayIPSecIntegrityAlgorithm_sha1),
-		string(upcloud.GatewayIPSecIntegrityAlgorithm_sha256),
-		string(upcloud.GatewayIPSecIntegrityAlgorithm_sha384),
-		string(upcloud.GatewayIPSecIntegrityAlgorithm_sha512),
-	}
-	allowedDHGroups = []int64{2, 5, 14, 15, 16, 18, 19, 20, 21, 24}
-)
-
-var (
 	_ resource.Resource                = &tunnelResource{}
 	_ resource.ResourceWithConfigure   = &tunnelResource{}
 	_ resource.ResourceWithImportState = &tunnelResource{}
@@ -468,7 +445,12 @@ func parseTunnelConnectionID(id string) (serviceUUID, connectionUUID string, err
 	return serviceUUID, connectionUUID, nil
 }
 
-func parseTunnelID(ctx context.Context, svc *service.Service, id string) (serviceUUID, connectionUUID, tunnelUUID string, err error) {
+type tunnelLookup interface {
+	GetGatewayConnections(ctx context.Context, r *request.GetGatewayConnectionsRequest) ([]upcloud.GatewayConnection, error)
+	GetGatewayConnectionTunnels(ctx context.Context, r *request.GetGatewayConnectionTunnelsRequest) ([]upcloud.GatewayTunnel, error)
+}
+
+func parseTunnelID(ctx context.Context, svc tunnelLookup, id string) (serviceUUID, connectionUUID, tunnelUUID string, err error) {
 	if err := utils.UnmarshalID(id, &serviceUUID, &connectionUUID, &tunnelUUID); err != nil {
 		return "", "", "", fmt.Errorf("invalid tunnel ID %q", id)
 	}
@@ -480,7 +462,7 @@ func parseTunnelID(ctx context.Context, svc *service.Service, id string) (servic
 	return migrateTunnelID(ctx, svc, serviceUUID, connectionUUID, tunnelUUID)
 }
 
-func migrateTunnelID(ctx context.Context, svc *service.Service, svcUUID, connName, tunName string) (serviceUUID, connectionUUID, tunnelUUID string, err error) {
+func migrateTunnelID(ctx context.Context, svc tunnelLookup, svcUUID, connName, tunName string) (serviceUUID, connectionUUID, tunnelUUID string, err error) {
 	conns, err := svc.GetGatewayConnections(ctx, &request.GetGatewayConnectionsRequest{ServiceUUID: svcUUID})
 	if err != nil {
 		return "", "", "", fmt.Errorf("failed to resolve connection name %q: %w", connName, err)
