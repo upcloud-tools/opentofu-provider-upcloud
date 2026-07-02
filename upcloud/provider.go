@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/UpCloudLtd/terraform-provider-upcloud/internal/config"
+	"github.com/UpCloudLtd/terraform-provider-upcloud/internal/service/account"
 	"github.com/UpCloudLtd/terraform-provider-upcloud/internal/service/cloud"
 	"github.com/UpCloudLtd/terraform-provider-upcloud/internal/service/database"
 	"github.com/UpCloudLtd/terraform-provider-upcloud/internal/service/filestorage"
@@ -209,6 +210,7 @@ func (p *upcloudProvider) Resources(_ context.Context) []func() resource.Resourc
 
 func (p *upcloudProvider) DataSources(_ context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
+		account.NewAccountDataSource,
 		cloud.NewHostsDataSource,
 		cloud.NewZoneDataSource,
 		cloud.NewZonesDataSource,
@@ -217,6 +219,7 @@ func (p *upcloudProvider) DataSources(_ context.Context) []func() datasource.Dat
 		loadbalancer.NewDNSChallengeDomainDataSource,
 		managedobjectstorage.NewPoliciesDataSource,
 		managedobjectstorage.NewRegionsDataSource,
+		server.NewServerDataSource,
 		storage.NewStorageDataSource,
 		network.NewNetworksDataSource,
 		database.NewOpenSearchIndicesDataSource,
