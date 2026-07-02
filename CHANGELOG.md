@@ -11,6 +11,25 @@ See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/)
 
 - data.upcloud_server: new data source to read server details by UUID
 - data.upcloud_account: new data source to read account info, resource limits, and billing details
+- upcloud_gateway: migrated to Plugin Framework
+- upcloud_gateway_connection, upcloud_gateway_tunnel: migrated to Plugin Framework
+- upcloud_networks: data source migrated to Plugin Framework
+- upcloud_managed_database_opensearch_indices: data source migrated to Plugin Framework
+- upcloud_managed_database_logical_database: migrated to Plugin Framework
+- upcloud_managed_database_*_sessions (MySQL, PostgreSQL, Valkey): data sources migrated to Plugin Framework
+- upcloud_tag: migrated to Plugin Framework
+- switch provider to OpenTofu-first registry (`registry.opentofu.org/upcloud-tools/upcloud-community`)
+
+### Fixed
+
+- upcloud_gateway: nil pointer panic in XactStart and V0/V1 state migrations
+- upcloud_gateway_tunnel: broken V0 tunnel state migration
+- upcloud_managed_database_valkey: use request context in sessions data source
+
+### Changed
+
+- removed terraform-plugin-mux (SDKv2 compatibility layer) — all resources now run on Plugin Framework
+- ci: update actions and optimize consistency
 
 ## [5.39.1] - 2026-06-15
 
