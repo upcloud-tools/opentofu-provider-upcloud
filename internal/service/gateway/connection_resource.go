@@ -41,14 +41,14 @@ type connectionResource struct {
 }
 
 type connectionModel struct {
-	ID           types.String `tfsdk:"id"`
-	UUID         types.String `tfsdk:"uuid"`
-	Name         types.String `tfsdk:"name"`
-	Gateway      types.String `tfsdk:"gateway"`
-	Type         types.String `tfsdk:"type"`
-	LocalRoute   types.Set    `tfsdk:"local_route"`
-	RemoteRoute  types.Set    `tfsdk:"remote_route"`
-	Tunnels      types.List   `tfsdk:"tunnels"`
+	ID          types.String `tfsdk:"id"`
+	UUID        types.String `tfsdk:"uuid"`
+	Name        types.String `tfsdk:"name"`
+	Gateway     types.String `tfsdk:"gateway"`
+	Type        types.String `tfsdk:"type"`
+	LocalRoute  types.Set    `tfsdk:"local_route"`
+	RemoteRoute types.Set    `tfsdk:"remote_route"`
+	Tunnels     types.List   `tfsdk:"tunnels"`
 }
 
 type routeModel struct {
@@ -92,8 +92,8 @@ func (r *connectionResource) Schema(_ context.Context, _ resource.SchemaRequest,
 				},
 			},
 			"name": schema.StringAttribute{
-				Description:      "The name of the connection, should be unique within the gateway.",
-				Required:         true,
+				Description: "The name of the connection, should be unique within the gateway.",
+				Required:    true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
@@ -145,8 +145,8 @@ func (r *connectionResource) Schema(_ context.Context, _ resource.SchemaRequest,
 							Required:    true,
 						},
 						"name": schema.StringAttribute{
-							Description:      "Name of the route",
-							Required:         true,
+							Description: "Name of the route",
+							Required:    true,
 							Validators: []validator.String{
 								stringvalidator.LengthBetween(1, 64),
 								stringvalidator.RegexMatches(namePattern, "must contain only alphanumeric characters, hyphens, and underscores"),
@@ -175,8 +175,8 @@ func (r *connectionResource) Schema(_ context.Context, _ resource.SchemaRequest,
 							Required:    true,
 						},
 						"name": schema.StringAttribute{
-							Description:      "Name of the route",
-							Required:         true,
+							Description: "Name of the route",
+							Required:    true,
 							Validators: []validator.String{
 								stringvalidator.LengthBetween(1, 64),
 								stringvalidator.RegexMatches(namePattern, "must contain only alphanumeric characters, hyphens, and underscores"),

@@ -60,26 +60,26 @@ func (m ipsecAuthPSKModel) AttributeTypes() map[string]attr.Type {
 }
 
 type ipsecPropertiesModel struct {
-	ChildRekeyTime            types.Int64  `tfsdk:"child_rekey_time"`
-	DPDDelay                  types.Int64  `tfsdk:"dpd_delay"`
-	DPDTimeout                types.Int64  `tfsdk:"dpd_timeout"`
-	IKELifetime               types.Int64  `tfsdk:"ike_lifetime"`
-	RekeyTime                 types.Int64  `tfsdk:"rekey_time"`
-	Phase1Algorithms          types.Set    `tfsdk:"phase1_algorithms"`
-	Phase1DHGroupNumbers      types.Set    `tfsdk:"phase1_dh_group_numbers"`
-	Phase1IntegrityAlgorithms types.Set    `tfsdk:"phase1_integrity_algorithms"`
-	Phase2Algorithms          types.Set    `tfsdk:"phase2_algorithms"`
-	Phase2DHGroupNumbers      types.Set    `tfsdk:"phase2_dh_group_numbers"`
-	Phase2IntegrityAlgorithms types.Set    `tfsdk:"phase2_integrity_algorithms"`
+	ChildRekeyTime            types.Int64 `tfsdk:"child_rekey_time"`
+	DPDDelay                  types.Int64 `tfsdk:"dpd_delay"`
+	DPDTimeout                types.Int64 `tfsdk:"dpd_timeout"`
+	IKELifetime               types.Int64 `tfsdk:"ike_lifetime"`
+	RekeyTime                 types.Int64 `tfsdk:"rekey_time"`
+	Phase1Algorithms          types.Set   `tfsdk:"phase1_algorithms"`
+	Phase1DHGroupNumbers      types.Set   `tfsdk:"phase1_dh_group_numbers"`
+	Phase1IntegrityAlgorithms types.Set   `tfsdk:"phase1_integrity_algorithms"`
+	Phase2Algorithms          types.Set   `tfsdk:"phase2_algorithms"`
+	Phase2DHGroupNumbers      types.Set   `tfsdk:"phase2_dh_group_numbers"`
+	Phase2IntegrityAlgorithms types.Set   `tfsdk:"phase2_integrity_algorithms"`
 }
 
 func (m ipsecPropertiesModel) AttributeTypes() map[string]attr.Type {
 	return map[string]attr.Type{
-		"child_rekey_time":             types.Int64Type,
-		"dpd_delay":                    types.Int64Type,
-		"dpd_timeout":                  types.Int64Type,
-		"ike_lifetime":                 types.Int64Type,
-		"rekey_time":                   types.Int64Type,
+		"child_rekey_time":            types.Int64Type,
+		"dpd_delay":                   types.Int64Type,
+		"dpd_timeout":                 types.Int64Type,
+		"ike_lifetime":                types.Int64Type,
+		"rekey_time":                  types.Int64Type,
 		"phase1_algorithms":           types.SetType{ElemType: types.StringType},
 		"phase1_dh_group_numbers":     types.SetType{ElemType: types.Int64Type},
 		"phase1_integrity_algorithms": types.SetType{ElemType: types.StringType},

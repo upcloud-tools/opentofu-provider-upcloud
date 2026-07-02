@@ -25,7 +25,7 @@ import (
 )
 
 var (
-	TestAccProviderFactories         map[string]func() (tfprotov6.ProviderServer, error)
+	TestAccProviderFactories          map[string]func() (tfprotov6.ProviderServer, error)
 	TestAccFrameworkProviderFactories map[string]func() (tfprotov6.ProviderServer, error)
 	TestAccProvider                   *schema.Provider
 )

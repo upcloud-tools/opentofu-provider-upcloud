@@ -18,7 +18,7 @@ See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/)
 - upcloud_managed_database_logical_database: migrated to Plugin Framework
 - upcloud_managed_database_*_sessions (MySQL, PostgreSQL, Valkey): data sources migrated to Plugin Framework
 - upcloud_tag: migrated to Plugin Framework
-- switch provider to OpenTofu-first registry (`registry.opentofu.org/upcloud-tools/upcloud-community`)
+- switch provider to OpenTofu-first registry
 
 ### Fixed
 

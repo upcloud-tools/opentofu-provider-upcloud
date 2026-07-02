@@ -21,8 +21,8 @@ import (
 	"github.com/UpCloudLtd/terraform-provider-upcloud/internal/service/router"
 	"github.com/UpCloudLtd/terraform-provider-upcloud/internal/service/server"
 	"github.com/UpCloudLtd/terraform-provider-upcloud/internal/service/servergroup"
-	"github.com/UpCloudLtd/terraform-provider-upcloud/internal/service/tag"
 	"github.com/UpCloudLtd/terraform-provider-upcloud/internal/service/storage"
+	"github.com/UpCloudLtd/terraform-provider-upcloud/internal/service/tag"
 	"github.com/UpCloudLtd/upcloud-go-api/credentials"
 
 	retryablehttp "github.com/hashicorp/go-retryablehttp"
