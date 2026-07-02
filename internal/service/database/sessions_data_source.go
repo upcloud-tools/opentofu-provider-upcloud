@@ -230,7 +230,7 @@ func (d *databaseSessionsDataSource) Read(ctx context.Context, req datasource.Re
 	case upcloud.ManagedDatabaseServiceTypePostgreSQL:
 		data.Sessions, diags = types.SetValueFrom(ctx, data.Sessions.ElementType(ctx), buildSessionsFrameworkPostgreSQL(sessions.PostgreSQL))
 	case upcloud.ManagedDatabaseServiceTypeValkey:
-		data.Sessions, diags = types.SetValueFrom(ctx, data.Sessions.ElementType(ctx), buildSessionsFrameworkValkey(sessions.Valkey))
+		data.Sessions, diags = types.SetValueFrom(ctx, data.Sessions.ElementType(ctx), buildSessionsFrameworkValkey(ctx, sessions.Valkey))
 	}
 	resp.Diagnostics.Append(diags...)
 
@@ -360,7 +360,7 @@ func buildSessionsFrameworkPostgreSQL(sessions []upcloud.ManagedDatabaseSessionP
 	return res
 }
 
-func buildSessionsFrameworkValkey(sessions []upcloud.ManagedDatabaseSessionValkey) []sessionValkeyModel {
+func buildSessionsFrameworkValkey(ctx context.Context, sessions []upcloud.ManagedDatabaseSessionValkey) []sessionValkeyModel {
 	res := make([]sessionValkeyModel, 0, len(sessions))
 	for _, s := range sessions {
 		res = append(res, sessionValkeyModel{
@@ -382,7 +382,7 @@ func buildSessionsFrameworkValkey(sessions []upcloud.ManagedDatabaseSessionValke
 			QueryBufferFree:                           types.Int64Value(int64(s.QueryBufferFree)),
 		})
 
-		flags, diags := types.SetValueFrom(context.Background(), types.StringType, s.Flags)
+		flags, diags := types.SetValueFrom(ctx, types.StringType, s.Flags)
 		if diags.HasError() {
 			return res
 		}
