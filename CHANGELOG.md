@@ -5,6 +5,13 @@ See updating [Changelog example here](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+## [5.40.0] - 2026-07-02
+
+### Added
+
+- data.upcloud_server: new data source to read server details by UUID
+- data.upcloud_account: new data source to read account info, resource limits, and billing details
+
 ## [5.39.1] - 2026-06-15
 
 ### Fixed
