@@ -40,6 +40,9 @@ __debug_bin*
 .envrc
 .idea
 
+.zed/
+.opencode/
+
 dist/
 terraform/
 /go.work
